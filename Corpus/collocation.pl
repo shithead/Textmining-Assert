@@ -18,7 +18,7 @@ sub count($$);
 sub statistic();
 
 #######################
-# globale variables
+# global variables
 our $tmp_dir = tempdir(CLEANUP => 1);
 #$tmp_dir = '/tmp/zni4LHx12n';
 our $freq_dir = join('/', $tmp_dir, "freq");
