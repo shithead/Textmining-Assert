@@ -25,19 +25,31 @@ my $src_dir;
 my $work_dir;
 my $fprefix;
 my $corpus;
+my $help;
 
 GetOptions(
     'wdir=s' => \$work_dir,
     'sdir=s' => \$src_dir,
-    'corpus' => \$corpus,
+    'corpus=s' => \$corpus,
     'fileprefix=s' => \$fprefix,
-    'help'  => \&usage()
+    'help'  => \$help
 );
 
-unless ($work_dir && $fprefix && $corpus) {
-    say "No working directory or file prefix or corpus defined!";
+usage() if($help);
+
+unless ($work_dir) {
+    say "No working directory defined!";
     usage();
-    exit 1;
+}
+
+unless ($fprefix) {
+    say "No file prefix defined!";
+    usage();
+}
+
+unless ($corpus) {
+    say "No corpus defined!";
+    usage();
 }
 
 our $tmp_dir = '';
@@ -52,7 +64,7 @@ if (defined $src_dir) {
 # global variables
 our $freq_dir   = join('/', $tmp_dir, "freq");
 our $stat_dir   = join('/', $tmp_dir, "stat");
-our $db_dir     = join('/', $tmp_dir, "db");
+our $db_dir     = join('/', $work_dir, "corpus");
 our $db_corpus_dir = join('/', $db_dir, $corpus);
 our @tokens     = qw(POS TAGGED LEMMA);
 our @statistics = qw(ll x2);
@@ -60,6 +72,8 @@ our @freq_files;
 
 #######################
 # working
+
+say '--------------- Build Database -------------------';
 
 make_path($db_dir);
 build_db($fprefix);
@@ -69,11 +83,11 @@ build_db($fprefix);
 
 sub usage() {
     say "usage: [APP] [-h] [-c corpus -f corpus_file]
-    -c, --corpus\tname of the corpus
-    -f, --fileprefix\tprefix of the corpus file (mostly the string to the last dot)
-    -s, --sdir\tsource directory
-    -w, --wdir\tworking directory
-    -h, --help\t\tthis text";
+    -c, -corpus\tname of the corpus
+    -f, -fileprefix\tprefix of the corpus file (mostly the string to the last dot)
+    -s, -sdir\tsource directory
+    -w, -wdir\tworking directory
+    -h, -help\t\tthis text";
     exit;
 }
 
@@ -108,7 +122,7 @@ sub get_corpus($$$) {
     my $ifile = "$fprefix.$token.w$windowSize";
     say $ifile;
     open my $MFH, "<:encoding(UTF-8)", join('/', $freq_dir, $ifile)
-        or die "Can't read old file: $!";
+        or die "Can't read file: $!\nDirectory: $freq_dir";
 
     while (<$MFH>) {
         my ($n1, $n2, $ctotal, $cn1, $freq) = undef;
@@ -131,14 +145,14 @@ sub get_corpus($$$) {
     return $corpus_struct;
 }
 
-sub statistic ($$) {
+sub get_statistic ($$) {
     my $filename        = shift;
     my $corpus_struct   = shift;
     for my $sig_value (@statistics) {
         my $iStatFile = "$filename.$sig_value";
         say $iStatFile;
         open my $MFH, "<:encoding(UTF-8)", join('/', $stat_dir, $iStatFile)
-            or die "Can't read old file: $!";
+            or die "Can't read file: $!\nDirectory:$stat_dir";
         while (<$MFH>) {
             chomp;
             my ($n1, $n2, $prio, $stat_value) = undef;

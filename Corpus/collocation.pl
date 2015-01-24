@@ -7,20 +7,20 @@ use strict;
 use warnings;
 use feature 'say';
 
-use Getopt::Long;
+use Data::Printer;
 use File::Path qw(make_path);
 use File::Temp qw(tempfile tempdir);
-use Data::Printer;
+use Getopt::Long;
 
 #######################
 # forward declaration
 sub count($$);
 sub statistic();
+sub usage();
 
 #######################
 # global variables
 our $tmp_dir = tempdir(CLEANUP => 1);
-#$tmp_dir = '/tmp/zni4LHx12n';
 our $freq_dir = join('/', $tmp_dir, "freq");
 our $stat_dir = join('/', $tmp_dir, "stat");
 our @tokens  = qw(POS TAGGED LEMMA);
@@ -30,18 +30,33 @@ our @freq_files;
 #######################
 # Options
 my $corpus_file;
+my $corpus;     # need for database.pl
+my $help;
 
 GetOptions(
-    'file=s' => \$corpus_file
+    'file=s' => \$corpus_file,
+    'corpus=s' => \$corpus,
+    'help'  => \$help
 );
 
 #######################
 # working
 
+usage() if($help);
 unless ($corpus_file) {
     say 'no corpus file';
-    exit;
+    usage();
 }
+
+unless ($corpus) {
+    say "no corpus name!\n
+    Disable cleanup of temp directory.\n
+    Run database Script manually.";
+    $tmp_dir = tempdir(CLEANUP => 0);
+}
+
+say '--------------- Build Corpusinforations -------------------';
+
 say "Temp directory: $tmp_dir";
 say "Input file: $corpus_file";
 
@@ -53,8 +68,22 @@ $filename =~ s/\.[^.]+$//;
 count($corpus_file, $filename);
 statistic();
 
-######################
+say "Temp directory: $tmp_dir";
+
+if ($corpus) {
+    system("perl ./database.pl -corpus=$corpus -sdir=$tmp_dir -wdir=data -fileprefix=$filename");
+}
+
+#####################
 # subroutines
+
+sub usage() {
+    say "usage: [APP] [-h] [-c corpus -f corpus_file]
+    -c, -corpus\tname of the corpus
+    -f, -file\t\tname of the corpus file
+    -h, -help\t\tthis text";
+    exit;
+}
 
 sub count ($$) {
     my $file     = shift;
