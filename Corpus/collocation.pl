@@ -23,7 +23,7 @@ sub usage();
 our $tmp_dir = tempdir(CLEANUP => 1);
 our $freq_dir = join('/', $tmp_dir, "freq");
 our $stat_dir = join('/', $tmp_dir, "stat");
-our @tokens  = qw(POS TAGGED LEMMA);
+our @tokens  = qw(POS WORDFORMS LEMMA);
 our @statistics = qw(ll x2);
 our @freq_files;
 

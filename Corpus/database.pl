@@ -66,7 +66,7 @@ our $freq_dir   = join('/', $tmp_dir, "freq");
 our $stat_dir   = join('/', $tmp_dir, "stat");
 our $db_dir     = join('/', $work_dir, "corpus");
 our $db_corpus_dir = join('/', $db_dir, $corpus);
-our @tokens     = qw(POS TAGGED LEMMA);
+our @tokens     = qw(POS WORDFORMS LEMMA);
 our @statistics = qw(ll x2);
 our @freq_files;
 
