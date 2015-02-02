@@ -1,5 +1,6 @@
 package Textmining::Assert::Storable;
 
+use Exporter 'import';
 use Storable qw(store_fd fd_retrieve);
 
 our @EXPORT_OK = (
