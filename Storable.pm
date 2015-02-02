@@ -2,6 +2,10 @@ package Textmining::Assert::Storable;
 
 use Storable qw(store_fd fd_retrieve);
 
+our @EXPORT_OK = (
+    qw(store retrieve)
+);
+
 #TODO Test for _store
 sub store($$) {
     my $data        =   shift;
