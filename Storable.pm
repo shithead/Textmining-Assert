@@ -12,7 +12,7 @@ sub store($$) {
     my $data        =   shift;
     my $location    =   shift;
 
-    open  my $FH , ">", $location || return undef;
+    open  my $FH , ">", $location or return undef;
     store_fd \$data, $FH;
     close $FH;
 }
@@ -21,7 +21,7 @@ sub store($$) {
 sub retrieve($) {
     my $location    = shift;
 
-    open  my $FH , "<", $location || return undef;
+    open  my $FH , "<", $location or return undef;
     my $data = fd_retrieve($FH);
     close $FH;
     return ${$data};
