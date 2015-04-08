@@ -7,7 +7,7 @@ use feature 'say';
 use Data::Printer;
 use File::Path qw(make_path remove_tree);
 use Getopt::Long;
-use Mojo::JSON;
+use Mojo::JSON qw(encode_json);
 use Storable qw(store_fd fd_retrieve);
 
 #######################
@@ -184,12 +184,7 @@ sub _store($$) {
 
 sub _hash_to_json ($) {
     my $meta_struct         = shift;
-    my $json                = Mojo::JSON->new;
-    my $json_bytes          = $json->encode($meta_struct);
-    my $err                 = $json->error;
-    if (defined $err) {
-        say "json encode: $err";
-    }
+    my $json_bytes          = encode_json($meta_struct);
     return $json_bytes;
 }
 
